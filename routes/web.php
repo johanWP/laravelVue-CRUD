@@ -16,3 +16,4 @@ Route::get('/', function () {
 });
 
 Route::post('/department/', 'DepartmentController@store')->name('department.store');
+Route::get('/allQuery', 'QueryController@allQuery')->name('allQuery');

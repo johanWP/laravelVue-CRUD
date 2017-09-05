@@ -50,7 +50,21 @@
                 </div>
                 <div class="columns">
                     <div class="column">
-                        Tabla de  departamentos
+                        <div v-if="!departments.length">
+                            No hay departamentos
+                        </div>
+                        <table v-else class="table">
+                            <thead>
+                            <td>#</td>
+                            <td>Titulo</td>
+                            </thead>
+                            <tbody>
+                            <tr v-for="department in departments">
+                                <td>@{{ department.id }}</td>
+                                <td>@{{ department.title }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -120,6 +134,9 @@
     <script>
 let elemento = new Vue({
     el: '.app',
+    mounted: function () {
+        this.allQuery();
+    },
     data: {
         menu: 0,
         modalGeneral: 0,
@@ -127,9 +144,27 @@ let elemento = new Vue({
         messageModal: '',
         modalDepartment: 0,
         titleDepartment: '',
-        errorTitleDepartment: 0
+        errorTitleDepartment: 0,
+        departments: []
+    },
+    watch: {
+        modalGeneral: function (value) {
+            if (!value) this.allQuery();
+        }
     },
     methods: {
+        allQuery() {
+            let me = this;
+            axios.get('{{ route('allQuery') }}')
+                .then(function (response) {
+                    let answer = response.data;
+                    me.departments = answer.departments;
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        },
+
         closeModal() {
             this.modalGeneral = 0;
             this.titleModal = '';
