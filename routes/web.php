@@ -16,4 +16,5 @@ Route::get('/', function () {
 });
 
 Route::post('/department/', 'DepartmentController@store')->name('department.store');
+Route::delete('/department/delete/{id}', 'DepartmentController@destroy')->name('department.delete');
 Route::get('/allQuery', 'QueryController@allQuery')->name('allQuery');

@@ -57,11 +57,15 @@
                             <thead>
                             <td>#</td>
                             <td>Titulo</td>
+                            <td>Eliminar</td>
                             </thead>
                             <tbody>
                             <tr v-for="department in departments">
                                 <td>@{{ department.id }}</td>
                                 <td>@{{ department.title }}</td>
+                                <td @click="openModal('department','delete', department)">
+                                    <i class="fa fa-ban" aria-hidden="true"></i>
+                                </td>
                             </tr>
                             </tbody>
                         </table>
@@ -109,6 +113,8 @@
                     <p class="control" v-if="modalDepartment!=0">
                         <input class="input" placeholder="Departamento" v-model="titleDepartment"
                                v-if="modalDepartment==1">
+                        <input class="input" placeholder="Departamento" v-model="titleDepartment" readonly
+                               v-if="modalDepartment==3">
                     </p>
                     <div v-show="errorTitleDepartment" class="columns text-center">
                         <div class="column text-center text-danger">
@@ -118,6 +124,8 @@
                     <div class="columns button-content">
                         <div class="column">
                             <a class="button is-success" @click="createDepartment()" v-if="modalDepartment==1">Aceptar</a>
+                            <a class="button is-success" @click="destroyDepartment()"
+                               v-if="modalDepartment==3">Aceptar</a>
                         </div>
                         <div class="column">
                             <a class="button is-danger" @click="closeModal()">Cancelar</a>
@@ -145,6 +153,7 @@ let elemento = new Vue({
         modalDepartment: 0,
         titleDepartment: '',
         errorTitleDepartment: 0,
+        idDepartment: 0,
         departments: []
     },
     watch: {
@@ -191,9 +200,24 @@ let elemento = new Vue({
                 });
         },
 
+        destroyDepartment() {
+            let me = this;
+            console.log('destroy');
+            axios.delete('{{ url('/department/delete')}}' + '/' + me.idDepartment)
+                .then(function (response) {
+                    me.idDepartment = 0;
+                    me.titleDepartment = '';
+                    me.modalDepartment = 0;
+                    me.closeModal();
+                })
+                .catch(function (error) {
+                    console.log('error: ' + error);
+                });
+        },
+
         openModal(type, action, data = []) {
             switch (type) {
-                case "department":
+                case 'department':
                 {
                     switch (action) {
                         case 'create':
@@ -212,7 +236,13 @@ let elemento = new Vue({
                         }
                         case 'delete':
                         {
-                        break;
+                            this.titleModal = 'Eliminación del Departamento';
+                            this.messageModal = 'Titulo del departamento';
+                            this.modalDepartment = 3;
+                            this.modalGeneral = 1;
+                            this.titleDepartment = data['title'];
+                            this.idDepartment = data['id'];
+                            break;
                         }
 
                     }

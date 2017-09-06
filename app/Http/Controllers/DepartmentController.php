@@ -80,8 +80,13 @@ class DepartmentController extends Controller
      * @param  \App\Department  $department
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Department $department)
+    public function destroy($id)
     {
-        //
+        if (Department::find($id)->delete()) {
+            return response(json_encode(['message' => 'ok']), 200);
+        }
+
+        return response(json_encode(['message' => 'error']), 400);
+
     }
 }
